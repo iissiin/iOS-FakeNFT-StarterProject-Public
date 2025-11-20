@@ -3,7 +3,7 @@ import Foundation
 final class UserNFTCollectionPresenter: UserNFTCollectionPresenterProtocol {
     
     weak var view: UserNFTCollectionViewInput?
-    private var nfts: [Nft] = []
+    private var items: [UserNFTCellModel] = []
     
     private let service: UserNFTCollectionServiceProtocol
     private let nftIDs: [String]
@@ -14,17 +14,11 @@ final class UserNFTCollectionPresenter: UserNFTCollectionPresenterProtocol {
     }
     
     var nftsCount: Int {
-        return nfts.count
+        return items.count
     }
     
     func nft(at index: Int) -> UserNFTCellModel {
-        let nft = nfts[index]
-        
-        let onCartTap = { [weak self] in
-            guard let self = self else { return }
-        }
-        
-        return UserNFTCellModel(nft: nft, onCartTap: onCartTap)
+        return items[index]
     }
     
     func viewDidLoad() {
@@ -33,7 +27,7 @@ final class UserNFTCollectionPresenter: UserNFTCollectionPresenterProtocol {
     
     private func loadNFTs() {
         guard !nftIDs.isEmpty else {
-            nfts = []
+            items = []
             view?.showEmptyState(isVisible: true)
             view?.displayNFTs()
             return
@@ -48,12 +42,12 @@ final class UserNFTCollectionPresenter: UserNFTCollectionPresenterProtocol {
                 
                 switch result {
                 case .success(let nfts):
-                    self.nfts = nfts
-                    let isEmpty = self.nfts.isEmpty
+                    self.items = nfts.map(UserNFTCellModel.init)
+                    let isEmpty = self.items.isEmpty
                     self.view?.showEmptyState(isVisible: isEmpty)
                     self.view?.displayNFTs()
                 case .failure(let error):
-                    self.nfts = []
+                    self.items = []
                     self.view?.showEmptyState(isVisible: true)
                     self.view?.showError(message: error.localizedDescription)
                 }

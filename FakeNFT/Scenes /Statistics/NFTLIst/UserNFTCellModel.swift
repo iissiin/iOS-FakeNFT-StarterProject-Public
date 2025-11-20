@@ -6,19 +6,14 @@ struct UserNFTCellModel {
     let title: String
     let priceETH: Double?
     let rating: Int?
-    let onCartTap: (() -> Void)?
 
-    init(nft: Nft, onCartTap: (() -> Void)?) {
+    init(nft: Nft) {
         self.id = nft.id
         self.imageURL = nft.images.first
+        self.title = "NFT #\(nft.id.prefix(4))"
         
-        self.title = nft.name ?? "Без названия"
-        
-        self.priceETH = nft.price
-        
-        self.rating = nft.rating
-        
-        self.onCartTap = onCartTap
+        self.priceETH = Double.random(in: 0.1...5.0)
+        self.rating = Int.random(in: 1...5)
     }
 
     var priceString: String? {
