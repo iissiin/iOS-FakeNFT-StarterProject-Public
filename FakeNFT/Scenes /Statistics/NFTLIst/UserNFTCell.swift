@@ -4,8 +4,6 @@ final class UserNFTCell: UICollectionViewCell {
 
     static let reuseIdentifier = "UserNFTCell"
 
-    private var onCartTap: (() -> Void)?
-
     private let nftImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFill
@@ -40,12 +38,11 @@ final class UserNFTCell: UICollectionViewCell {
         return stack
     }()
 
-    private lazy var cartButton: UIButton = {
+    private let cartButton: UIButton = {
         let button = UIButton(type: .custom)
         button.setImage(UIImage(named: "cart_btn"), for: .normal)
         button.tintColor = .label
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.addTarget(self, action: #selector(didTapCartButton), for: .touchUpInside)
         return button
     }()
 
@@ -78,18 +75,12 @@ final class UserNFTCell: UICollectionViewCell {
         infoContainer.translatesAutoresizingMaskIntoConstraints = false
 
         contentView.addSubview(infoContainer)
-        
-        ratingStack.setContentCompressionResistancePriority(.required, for: .horizontal)
-        ratingStack.setContentHuggingPriority(.required, for: .horizontal)
-        
 
         cartButton.heightAnchor.constraint(equalToConstant: 30).isActive = true
         cartButton.widthAnchor.constraint(equalToConstant: 30).isActive = true
         
         textStack.setContentHuggingPriority(.defaultLow, for: .horizontal)
-        textStack.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
-        cartButton.setContentHuggingPriority(.required, for: .horizontal)
-        cartButton.setContentCompressionResistancePriority(.required, for: .horizontal)
+        cartButton.setContentHuggingPriority(.defaultHigh, for: .horizontal)
 
         NSLayoutConstraint.activate([
             nftImageView.topAnchor.constraint(equalTo: contentView.topAnchor),
@@ -112,18 +103,12 @@ final class UserNFTCell: UICollectionViewCell {
         setStars(model.rating ?? 0)
         ratingStack.isHidden = model.rating == nil
         
-        self.onCartTap = model.onCartTap
-        
         if let url = model.imageURL {
             nftImageView.setImage(from: url, placeholder: nil)
         } else {
             nftImageView.cancelLoading()
             nftImageView.image = nil
         }
-    }
-    
-    @objc private func didTapCartButton() {
-        onCartTap?()
     }
 
     private func setStars(_ rating: Int) {
@@ -143,8 +128,6 @@ final class UserNFTCell: UICollectionViewCell {
             ])
 
             ratingStack.addArrangedSubview(iv)
-            iv.setContentCompressionResistancePriority(.required, for: .horizontal)
-            iv.setContentHuggingPriority(.required, for: .horizontal)
         }
     }
 
@@ -155,6 +138,5 @@ final class UserNFTCell: UICollectionViewCell {
         nftImageView.cancelLoading()
         nftImageView.image = nil
         ratingStack.arrangedSubviews.forEach { $0.removeFromSuperview() }
-        onCartTap = nil
     }
 }
